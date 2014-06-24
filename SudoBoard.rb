@@ -2,6 +2,10 @@ module SudokuSolver
   
   class SudoBoard
     
+	SIZE = 9
+	WHOLE_BOARD_SIZE = SIZE * SIZE
+	SMALL_BLOCK_SIZE = 3 # or Math.sqrt(SIZE).floor 
+	
     class SolvingError < StandardError
     end
 
@@ -9,15 +13,11 @@ module SudokuSolver
       attr_accessor :value, :possibilities
       
       def initialize
-        @possibilities = [1,2,3,4,5,6,7,8,9]
+        @possibilities = (1..SIZE).to_a
         @value = nil
       end
       
-      def clone
-        copy = super
-        copy
-      end
-
+      
       def delete_possibility(number)
         test_value(number)
         return if @possibilities == [number]
@@ -33,7 +33,7 @@ module SudokuSolver
       
       def test_value(number)
         number.is_a?(Fixnum)
-        number > 0 and number < 10 or raise ArguemntError, "standard sudoku only uses numbers from 1 through 9"
+        number > 0 and number <= SIZE or raise ArguemntError, "sudoku only uses numbers from 1 through #{SIZE}"
       end
       
       def to_s
@@ -50,59 +50,46 @@ module SudokuSolver
       
     end
 
-    def initialize(array = nil)
+	def initialize(array = nil)
       if valid_board_array?(array)
         @board = array
       else
-        @board ||= Array.new(9) { Array.new(9) {SudoSquare.new}}
+        @board ||= Array.new( WHOLE_BOARD_SIZE )
       end
     end
-
-    def valid_board_array?(board = nil)
-      board ||= @board
+	
+	def valid_board_array?(board)
       board.is_a?(Array) or return false
-
-      valid_rows = 0
-      board.each do |row|
-
-        row.is_a?(Array) or return false
-
-        valid_squares = 0
-        row.each do |square|
-          square.is_a?(SudoSquare) or return false
-          valid_squares += 1
-        end
-        valid_squares == 9 or return false
-        
-        valid_rows += 1
-      end
-      valid_rows == 9 or return false
-
-      return true
+	  board.lenth == WHOLE_BOARD_SIZE or return false
+	  board.index { |entry| not entry.is_a?(SudoSquare) } or return true
+    end
+	
+	def update(value,position)	  
+      @board[position].set_possibility(value)
+    end
+	
+    def update_and_solve(value, position1, position2 = nil)
+	  if position2
+	    position1 < WHOLE_BOARD_SIZE or raise ArgumentError, "there are only #{WHOLE_BOARD_SIZE} rows on the Sudoku board"
+	    update_square_without_solve(value, position1)
+	  else
+	    row < SIZE or raise ArgumentError, "there are only #{SIZE} rows on the Sudoku board"
+        column < SIZE or raise ArgumentError, "there are only #{SIZE} columns on a Sudoku board"
+	    update_square_without_solve(value, position1 * SIZE + position2)
+	  end
+	  solve(false)
     end
 
-    def update_square_without_solve(row, column, value)
-      row < 9 or raise ArgumentError, "there are only 9 rows on a Sudoku board"
-      column < 9 or raise ArgumentError, "there are only 9 columns on a Sudoku board"
-      @board[row][column].set_possibility(value)
-    end
-
-    def update(row, column, value)
-      puts "update #{row},#{column},#{value}"
-      update_square_without_solve(row, column, value)
-      solve(false)
-    end
-    
-    def solve(try_guesses = true, last_solution = 9 * 9)
+    def solve(try_guesses = true, last_solution_count = WHOLE_BOARD_SIZE)
       puts "solve"
-      unsolved_count = 9 * 9
-      (0..8).each do |row|
-        (0..8).each do |column|
-          unless @board[row][column].value.nil?
-            delete_possibility_from_row(row, @board[row][column].value)
-            delete_possibility_from_column(column, @board[row][column].value)
-            delete_possibility_from_block(row/3, column/3, @board[row][column].value)
-            unsolved_count -= 1 if @board[row][column].value 
+      unsolved_count = WHOLE_BOARD_SIZE
+	  
+	  (0..SIZE).each do |position|
+	    unless @board[position].value.nil?
+		    delete_possibility_from_row(position, @board[position].value)
+            delete_possibility_from_column(position, @board[position].value)
+            delete_possibility_from_block(position, @board[position].value)
+			unsolved_count -= 1
           end
         end
       end
@@ -114,25 +101,25 @@ module SudokuSolver
         reduce_blocks
       end
 
-      return solve(try_guesses, unsolved_count) if unsolved_count != last_solution
-      return guess(unsolved_count) if try_guesses && unsolved_count > 0
+      return solve(try_guesses, unsolved_count) if unsolved_count != last_solution_count
+      #return guess(unsolved_count) if try_guesses && unsolved_count > 0
       pp
       return unsolved_count
     end
     
-    def guess(return_value = 81)
-      row, column = [nil,nil]
-      row, column = coords_of_square_with_two_options
-      row, column = first_unsolved_square unless row
-      raise SolvingError, "asked to guess on a solved board" unless row
-      puts "guessing for #{row},#{column}"
+	# currently broken -- need to override clone
+	def guess(return_value = 81)
+      position = @board.find_index { |square| square.possibilities.length == 2 }
+	  position ||= @board.find_index { |square| square.possibilities.length > 1 }
+      raise SolvingError, "asked to guess on a solved board" unless position
+      puts "guessing for #{position / SIZE},#{position - position / SIZE}"
       test_boards = []
-      @board[row][column].possibilities.each do |possibility|
+      @board[position].possibilities.each do |possibility|
         puts "guessing value #{possibility}"
         test_boards.push(b.clone)
         begin
-          return_value = test_boards[-1].update(row,column,possibility)
-          puts "result of guessing #{possibility} for #{row},#{column}"
+          return_value = test_boards[-1].update_and_solve(position,possibility)
+          puts "result of guessing #{possibility} for #{position/SIZE},#{position - position/SIZE}"
           test_boards[-1].pp
           self.pp
         rescue SolvingError => ex
@@ -145,47 +132,34 @@ module SudokuSolver
       end
       return return_value
     end
-    
-    def coords_of_square_with_two_options
-      (0..8).each do |row|
-        (0..8).each do |column|
-          @board[row][column].possibilities.length == 2 and return [row,column]
-        end
-      end
-    end
-    
-    def first_unsolved_square
-      (0..8).each do |row|
-        (0..8).each do |column|
-          @board[row][column].possibilities.length > 1 and return [row,column]
-        end
-      end
-    end
 
-    def delete_possibility_from_row(row, value)
-      row < 9 or raise ArgumentError, "there are only 9 rows on a Sudoku board"
-      (0..8).each do |column|
-        @board[row][column].delete_possibility(value)
+    def delete_possibility_from_row(position, value)
+	  rowstart = position - position % SIZE
+      (0..SIZE-1).each do |offset|
+        @board[rowstart + offset].delete_possibility(value)
       end
     end
     
-    def delete_possibility_from_column(column, value)
-      column < 9 or raise ArgumentError, "there are only 9 rows on a Sudoku board"
-      (0..8).each do |row|
-        @board[row][column].delete_possibility(value)
+    def delete_possibility_from_column(position, value)
+	  columnstart = position % SIZE
+      (0..SIZE-1).each do |offset|
+        @board[columnstart + offset * SIZE].delete_possibility(value)
       end
     end
     
-    def delete_possibility_from_block(block_row, block_column, value)
-      block_row < 3 or raise ArgumentError, "a standard sudoku board has 9 blocks"
-      block_column < 3 or raise ArgumentError, "a standard sudoku board has 9 blocks"
-      
-      (0..2).each do |row_index|
-        (0..2).each do |column_index|
-          @board[block_row * 3 + row_index][block_column * 3 + column_index].delete_possibility(value)
+	def delete_possibility_from_block(position, value)
+	  rowstart = position - position % SIZE
+	  columnstart = position % SIZE
+	  leftmost_column_in_bock = columnstart - columnstart % SMALL_BLOCK_SIZE
+	  topmost_row_in_block = rowstart - (rowstart / SIZE) % SMALL_BLOCK_SIZE * SIZE
+      (0..SMALL_BLOCK_SIZE - 1).each do |row_offset|
+        (0..SMALL_BLOCK_SIZE - 1).each do |column_offset|
+          @board[topmost_row_in_block + row_offset * SIZE + columnstart + column_offset].delete_possibility(value)
         end
       end
     end
+        
+    # pickup here
     
     def reduce_rows
       (0..8).each do |row|
