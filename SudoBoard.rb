@@ -33,7 +33,7 @@ module SudokuSolver
     def initialize(init_size = 9)
       CheckSize(init_size) or raise ArgumentError, "sudoku boards can only be certain sizes"
       @size = init_size
-      @block_size = Math.sqrt(init_size)
+      @block_size = Math.sqrt(init_size).floor
       @board = Array.new(size) {Array.new(size) {SudoSquare.new(size)} }
     end
     
@@ -53,7 +53,7 @@ module SudokuSolver
       @board[row_index - 1][column_index - 1]
     end
 
-    # return a block based on one-indexed coordinates for blocks 
+    # return a block based on one-indexed coordinates for blocks
     # for a standard 9x9 board, these would be 9 blocks from (0,0) through (2,2)
     def block(block_row, block_column)
       block_row > 0 and block_row <= block_size or raise ArgumentError
@@ -61,57 +61,51 @@ module SudokuSolver
 
       first_row = (block_row - 1) * block_size + 1
       first_column = (block_column - 1) * block_size + 1
-      rows_indexes = (first_row ... first_row + block_size)
+      row_indexes = (first_row ... first_row + block_size)
       column_indexes = (first_column ... first_column + block_size)
 
       row_indexes.inject([]) do |result, row|
-        result.concat( column_indexes.collect { |column| square(row,column) } )
+        result.concat( 
+          column_indexes.collect do |column| 
+            square(row,column)
+          end
+        )
       end
     end
       
-    def pp
+    def inspect
       max_char_width = size / 10 + 1
       digit_format = "%" + max_char_width.to_s + "d"
       line_width = (max_char_width + 1) * size + 2 * (block_size - 1)
+      result = ""
 
       (1..size).each do |row_index|
 
         (1..size).each do |column_index|
+          result += ' '
           if square(row_index, column_index).value
-            print sprintf(digit_format, square(row_index, column_index).value)
+            result += sprintf(digit_format, square(row_index, column_index).value)
           else
-            print '*' * max_char_width
+            result += '*' * max_char_width
           end
-          print ' '
           if column_index % size == 0
-            puts
+            result += "\n"
           else
-            column_index % block_size == 0 and print "| "
+            column_index % block_size == 0 and result += " |"
           end
         end
 
         if row_index % block_size == 0 and row_index != size
-          puts "-" * line_width
+          result += "-" * line_width + "\n"
         end
       end
-      puts
-
+      return result
+    end
+    
+    def pp
+      puts inspect
     end
     
   end
   
 end
-
-__END__
-
-require './SudoSolver.rb'
-b = SudokuSolver::SudoBoard.new
-b.pp
- 
-bl = SudokuSolver::SudoBoard.new 16
-bl.pp
-
-bl.square(3,4).value = 16
-
-bl.pp
-
