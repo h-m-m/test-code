@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require './SudoBoard.rb'
 
+
 describe :SudoBoard do
   it "creates a 9x9 board of squares by default" do
     @board = SudokuSolver::SudoBoard.new
@@ -16,7 +17,6 @@ describe :SudoBoard do
   it "creates any arbitrary square board" do
     @board = SudokuSolver::SudoBoard.new(16)
     @board.size.must_equal 16
-    @board.square(9,9).must_be_instance_of(SudokuSolver::SudoBoard::SudoSquare)
     @board.square(1,1).wont_be_nil
     @board.square(16,16).wont_be_nil
     proc {@board.square(25,25)}.must_raise ArgumentError
@@ -34,14 +34,7 @@ describe :SudoBoard do
     
     proc {SudokuSolver::SudoBoard.new(5)}.must_raise ArgumentError
   end
-  
-  it "allows for updating a square" do
-    @board = SudokuSolver::SudoBoard.new
-    @board.square(1,3).value = 4
-    @board.square(1,3).value.must_equal 4
-    proc {@board.square(1,5).value = 11 }.must_raise ArgumentError
-  end
-  
+    
   it "prints out a legible board" do
     @board = SudokuSolver::SudoBoard.new
     @board.inspect.must_equal <<EOF
@@ -77,7 +70,7 @@ EOF
 EOF
     @board = SudokuSolver::SudoBoard.new(16)
     @board.square(10,5).value = 14
-    @board.inspect.must_equal  <<EOF
+    @board.inspect.must_equal <<EOF
  ** ** ** ** | ** ** ** ** | ** ** ** ** | ** ** ** **
  ** ** ** ** | ** ** ** ** | ** ** ** ** | ** ** ** **
  ** ** ** ** | ** ** ** ** | ** ** ** ** | ** ** ** **

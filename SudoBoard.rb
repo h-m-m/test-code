@@ -1,30 +1,10 @@
+require './SudoSquare.rb'
+
 module SudokuSolver
 
   class SudoBoard
     attr_reader :size, :block_size, :value
     
-    class SudoSquare
-      attr_reader :value, :size
-
-      def initialize(size, value = nil)
-        @size = size
-        @value = value
-      end
-
-      def value=(new_value)
-        new_value > 0 and new_value <= size or raise ArgumentError, "invalid value for sudoku square"
-        @value = new_value
-      end
-
-      def to_s
-        value.nil? ? '*' : value.to_s
-      end
-      
-      def inspect
-        value.inspect
-      end
-
-    end
 
     def CheckSize(size)
       Math.sqrt(size).floor == Math.sqrt(size)
@@ -65,8 +45,8 @@ module SudokuSolver
       column_indexes = (first_column ... first_column + block_size)
 
       row_indexes.inject([]) do |result, row|
-        result.concat( 
-          column_indexes.collect do |column| 
+        result.concat(
+          column_indexes.collect do |column|
             square(row,column)
           end
         )
