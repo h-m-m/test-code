@@ -1,8 +1,6 @@
 require 'minitest/autorun'
 require './SudoSquare.rb'
 
-MiniTest::Assertions.diff = nil
-
 
 describe :SudoSquare do
   before do
@@ -15,7 +13,7 @@ describe :SudoSquare do
     proc {@sq.value = 10}.must_raise ArgumentError
   end
 
-  it "keeps a list of possible values, starting from 1 through size" do
+  it "can return an array of possible values, starting from 1 through size" do
     @sq.possibilities.must_equal [1,2,3,4,5,6,7,8,9]
     @bigsq.possibilities.must_equal [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16]
   end

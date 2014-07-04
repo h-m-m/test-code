@@ -10,11 +10,17 @@ module SudokuSolver
       Math.sqrt(size).floor == Math.sqrt(size)
     end
 
-    def initialize(init_size = 9)
+    def initialize(init_size = 9, initial_values = nil)
       CheckSize(init_size) or raise ArgumentError, "sudoku boards can only be certain sizes"
       @size = init_size
       @block_size = Math.sqrt(init_size).floor
       @board = Array.new(size) {Array.new(size) {SudoSquare.new(size)} }
+      if initial_values
+        initial_values.is_a?(Hash) or raise ArgumentError, "board object only accepts a hash of initial values"
+        initial_values.each do |location,value|
+          square(*location).value = value
+        end
+      end
     end
     
     def row(row_number)
