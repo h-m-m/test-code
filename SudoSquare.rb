@@ -3,27 +3,36 @@ module SudokuSolver
   class Square
     attr_reader :value, :size, :possibilities
     
+    # this should probably be a class method that takes size as an argument
+    attr_reader :maximum_width_of_to_s
+    
     def initialize(size, value = nil)
       @size = size
       @value = value
       @possibilities = (1..size).to_a
+      @maximum_width_of_to_s = size / 10 + 1
     end
     
     def valid_value?(value)
       value > 0 and value <= size
     end
 
-    def value=(new_value, override = false)
+    def value=(new_value)
       valid_value?(new_value) or raise ArgumentError, "invalid value for sudoku square"
-      unless override or @possibilities.index(new_value) 
-        raise RuntimeError
-      end
       @possibilities = [new_value]
       @value = new_value
     end
-    
+
+    def update_value_if_valid(new_value)
+      unless @possibilities.index(new_value) 
+        return false
+      end
+      value = new_value
+    end
+
     def to_s
-      value.nil? ? '*' : value.to_s
+      format_string = '%' + @maximum_width_of_to_s.to_s + 'd'
+      value.nil? ? '*' * @maximum_width_of_to_s : sprintf(format_string, value)
     end
     
     def inspect

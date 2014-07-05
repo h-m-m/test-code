@@ -10,7 +10,7 @@ describe :Square do
 
   it "has a size that determines max value" do
     @bigsq.value = 16
-    proc {@sq.value = 10}.must_raise ArgumentError
+    proc {@sq.value = 10}.must_raise(ArgumentError,RuntimeError)
   end
 
   it "can return an array of possible values, starting from 1 through size" do
@@ -37,6 +37,21 @@ describe :Square do
     (2..9).each { |d| @sq.delete_possibility d }
     proc {@sq.delete_possibility 1}.must_raise(RuntimeError,StandardError)
     @sq.possibilities.length.must_equal 1
+  end
+
+  it "has a method that won't let you set it to a value there's no possibility for" do
+    (1..3).each { |d| @sq.delete_possibility d }
+    @sq.update_value_if_valid(2).must_equal false
+  end
+
+  it "can provide a string representation that is constant width regardless of value" do
+    @sq.to_s.must_equal '*'
+    @bigsq.maximum_width_of_to_s.must_equal 2
+    @bigsq.to_s.must_equal '**'
+    @bigsq.value = 9
+    @bigsq.to_s.must_equal ' 9'
+    @bigsq.value = 13
+    @bigsq.to_s.must_equal '13'
   end
 
 end
