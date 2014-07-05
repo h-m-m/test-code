@@ -42,7 +42,7 @@ module SudokuSolver
     def delete_possibility(value)
       valid_value?(value) or raise ArgumentError, "possibility outside of valid range for this square"
       if @possibilities.length == 1 and @possibilities[0] == value
-        raise RuntimeError, "can't delete last possibility"
+        return false
       end
       
       @possibilities.delete(value)

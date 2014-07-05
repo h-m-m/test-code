@@ -56,6 +56,7 @@ EOF
   
   it "can accept the board and solve it in place" do
     @solver.solve!(@hard_board)
+    puts @hard_board.inspect
     @hard_board.inspect.must_equal @hard_board_solution_str
   end
 end

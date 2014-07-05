@@ -33,9 +33,9 @@ describe :Square do
     @sq.value.must_equal 9
   end
 
-  it "does not allow you to delete the last possibility" do
+  it "returns false if you try to delete the last possibility" do
     (2..9).each { |d| @sq.delete_possibility d }
-    proc {@sq.delete_possibility 1}.must_raise(RuntimeError,StandardError)
+    @sq.delete_possibility(1).must_equal false
     @sq.possibilities.length.must_equal 1
   end
 

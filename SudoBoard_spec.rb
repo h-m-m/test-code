@@ -1,6 +1,7 @@
 require 'minitest/autorun'
 require './SudoBoard.rb'
 
+MiniTest::Assertions.diff =nil
 
 describe :Board do
   it "creates a 9x9 board of squares by default" do
@@ -114,9 +115,17 @@ EOF
   it "can provide a list containing squares in the correct block" do
     @board = SudokuSolver::Board.new(16)
     @board.square(10,2).value = 10
-    @block = @board.block(3,1)
+    @block = @board.block_around(10,2)
     @block[5].value.must_equal 10
     @block.length.must_equal 16
+  end
+  
+  it "can return a list of all blocks" do
+    @board = SudokuSolver::Board.new
+    @board.square(1,9).value = 3
+    @blocks = @board.blocks
+    @board.blocks[0][0].value.must_equal nil
+    @board.blocks[2][2].value.must_equal 3
   end
 
   it "can accept a hash of [coordinates]=>values and use it to populate a board" do
@@ -147,5 +156,25 @@ EOF
     }
     @board = SudokuSolver::Board.new(9,@hard_board_hash)
     @board.inspect.must_equal @hard_board_str
+  end
+
+  it "can provide provide a list of every coordinate" do
+    @board = SudokuSolver::Board.new
+    @test_value = 8
+    @test_coordinate = [3,3]
+    @found_coordinate = false
+    @found_9x9 = false
+    @board.square(*@test_coordinate).value = @test_value
+    @board.coordinate_list.each do |coord|
+      if coord == @test_coordinate
+        @board.square(*coord).value.must_equal @test_value
+        @found_coordinate = true
+      end
+      if coord = [9,9]
+        @found_9x9 = true
+      end
+    end
+    @found_coordinate.must_equal true
+    @found_9x9.must_equal true
   end
 end
