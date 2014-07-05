@@ -60,20 +60,13 @@ module SudokuSolver
     end
       
     def inspect
-      max_char_width = size / 10 + 1
-      digit_format = "%" + max_char_width.to_s + "d"
-      line_width = (max_char_width + 1) * size + 2 * (block_size - 1)
+      line_width = (square(1,1).maximum_width_of_to_s + 1) * size + 2 * (block_size - 1)
       result = ""
 
       (1..size).each do |row_index|
 
         (1..size).each do |column_index|
-          result += ' '
-          if square(row_index, column_index).value
-            result += sprintf(digit_format, square(row_index, column_index).value)
-          else
-            result += '*' * max_char_width
-          end
+          result += ' ' + square(row_index, column_index).to_s
           if column_index % size == 0
             result += "\n"
           else
