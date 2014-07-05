@@ -4,7 +4,7 @@ require './SudoBoard.rb'
 
 MiniTest::Assertions.diff=nil
 
-describe :SudoSolver do
+describe :Solver do
   before do
     @hard_board_str = <<EOF
  * 8 9 | * * * | * 6 *
@@ -45,7 +45,7 @@ EOF
       [9,2] => 2, [9,7] => 9, [9,8] => 3
     }
 
-    @hard_board = SudokuSolver::SudoBoard.new(9,@hard_board_hash)
+    @hard_board = SudokuSolver::Board.new(9,@hard_board_hash)
     @solver = SudokuSolver::Solver.new
   end
   

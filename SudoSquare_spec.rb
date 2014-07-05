@@ -2,10 +2,10 @@ require 'minitest/autorun'
 require './SudoSquare.rb'
 
 
-describe :SudoSquare do
+describe :Square do
   before do
-    @sq = SudokuSolver::SudoSquare.new(9)
-    @bigsq = SudokuSolver::SudoSquare.new(16)
+    @sq = SudokuSolver::Square.new(9)
+    @bigsq = SudokuSolver::Square.new(16)
   end
 
   it "has a size that determines max value" do

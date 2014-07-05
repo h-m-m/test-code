@@ -2,7 +2,7 @@ require './SudoSquare.rb'
 
 module SudokuSolver
 
-  class SudoBoard
+  class Board
     attr_reader :size, :block_size, :value
     
 
@@ -14,7 +14,7 @@ module SudokuSolver
       CheckSize(init_size) or raise ArgumentError, "sudoku boards can only be certain sizes"
       @size = init_size
       @block_size = Math.sqrt(init_size).floor
-      @board = Array.new(size) {Array.new(size) {SudoSquare.new(size)} }
+      @board = Array.new(size) {Array.new(size) {Square.new(size)} }
       if initial_values
         initial_values.is_a?(Hash) or raise ArgumentError, "board object only accepts a hash of initial values"
         initial_values.each do |location,value|

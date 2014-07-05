@@ -2,9 +2,9 @@ require 'minitest/autorun'
 require './SudoBoard.rb'
 
 
-describe :SudoBoard do
+describe :Board do
   it "creates a 9x9 board of squares by default" do
-    @board = SudokuSolver::SudoBoard.new
+    @board = SudokuSolver::Board.new
     @board.size.must_equal 9
     @board.square(9,9).wont_be_nil
     @board.square(1,1).wont_be_nil
@@ -15,7 +15,7 @@ describe :SudoBoard do
   end
   
   it "creates any arbitrary square board" do
-    @board = SudokuSolver::SudoBoard.new(16)
+    @board = SudokuSolver::Board.new(16)
     @board.size.must_equal 16
     @board.square(1,1).wont_be_nil
     @board.square(16,16).wont_be_nil
@@ -23,7 +23,7 @@ describe :SudoBoard do
     proc {@board.square(26,26)}.must_raise ArgumentError
     proc {@board.square(0,0)}.must_raise ArgumentError
     
-    @board = SudokuSolver::SudoBoard.new(25)
+    @board = SudokuSolver::Board.new(25)
     @board.size.must_equal 25
     @board.square(9,9).wont_be_nil
     @board.square(1,1).wont_be_nil
@@ -32,11 +32,11 @@ describe :SudoBoard do
     proc {@board.square(26,26)}.must_raise ArgumentError
     proc {@board.square(0,0)}.must_raise ArgumentError
     
-    proc {SudokuSolver::SudoBoard.new(5)}.must_raise ArgumentError
+    proc {SudokuSolver::Board.new(5)}.must_raise ArgumentError
   end
     
   it "prints out a legible board" do
-    @board = SudokuSolver::SudoBoard.new
+    @board = SudokuSolver::Board.new
     @board.inspect.must_equal <<EOF
  * * * | * * * | * * *
  * * * | * * * | * * *
@@ -53,7 +53,7 @@ EOF
   end
   
   it "prints out a legible board that reflects updates" do
-    @board = SudokuSolver::SudoBoard.new
+    @board = SudokuSolver::Board.new
     @board.square(2,3).value = 4
     @board.inspect.must_equal <<EOF
  * * * | * * * | * * *
@@ -68,7 +68,7 @@ EOF
  * * * | * * * | * * *
  * * * | * * * | * * *
 EOF
-    @board = SudokuSolver::SudoBoard.new(16)
+    @board = SudokuSolver::Board.new(16)
     @board.square(10,5).value = 14
     @board.inspect.must_equal <<EOF
  ** ** ** ** | ** ** ** ** | ** ** ** ** | ** ** ** **
@@ -94,7 +94,7 @@ EOF
   end
   
   it "can provide a list containing squares in the correct row" do
-    @board = SudokuSolver::SudoBoard.new
+    @board = SudokuSolver::Board.new
     @board.square(8,7).value = 1
     @row = @board.row(8)
     @row[6].value.must_equal 1
@@ -103,7 +103,7 @@ EOF
   end
   
   it "can provide a list containing squares in the correct column" do
-    @board = SudokuSolver::SudoBoard.new
+    @board = SudokuSolver::Board.new
     @board.square(3,6).value = 6
     @column = @board.column(6)
     @column[2].value.must_equal 6
@@ -112,7 +112,7 @@ EOF
   end
   
   it "can provide a list containing squares in the correct block" do
-    @board = SudokuSolver::SudoBoard.new(16)
+    @board = SudokuSolver::Board.new(16)
     @board.square(10,2).value = 10
     @block = @board.block(3,1)
     @block[5].value.must_equal 10
@@ -145,7 +145,7 @@ EOF
       [8,1] => 1, [8,5] => 7, [8,9] => 2,
       [9,2] => 2, [9,7] => 9, [9,8] => 3
     }
-    @board = SudokuSolver::SudoBoard.new(9,@hard_board_hash)
+    @board = SudokuSolver::Board.new(9,@hard_board_hash)
     @board.inspect.must_equal @hard_board_str
   end
 end

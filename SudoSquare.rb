@@ -1,6 +1,6 @@
 module SudokuSolver
   
-  class SudoSquare
+  class Square
     attr_reader :value, :size, :possibilities
     
     def initialize(size, value = nil)
