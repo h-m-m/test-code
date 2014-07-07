@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require './SudoSquare.rb'
+require './Square.rb'
 
 
 describe :Square do

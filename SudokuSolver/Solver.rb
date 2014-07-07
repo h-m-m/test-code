@@ -5,7 +5,7 @@ module SudokuSolver
     end
     def solve(board)
     end
-
+    
     def solve!(board, last_solution_count = board.size * board.size)
       unsolved_count = board.size * board.size
 
@@ -52,6 +52,9 @@ module SudokuSolver
       end
     end
     
+    def guess
+      
+    end
   end
 end
 

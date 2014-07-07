@@ -1,5 +1,5 @@
 require 'minitest/autorun'
-require './SudoBoard.rb'
+require './Board.rb'
 
 MiniTest::Assertions.diff =nil
 
@@ -176,5 +176,14 @@ EOF
     end
     @found_coordinate.must_equal true
     @found_9x9.must_equal true
+  end
+
+  it "clones its squares when it clones itself" do
+    @board = SudokuSolver::Board.new
+    @board.square(4,8).value = 4
+    @new_board = @board.clone
+    @new_board.square(4,8).value.must_equal 4
+    @new_board.square(3,1).value = 1
+    @board.square(3,1).value.must_be_nil
   end
 end

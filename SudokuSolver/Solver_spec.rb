@@ -1,6 +1,6 @@
 require 'minitest/autorun'
-require './SudoSolver.rb'
-require './SudoBoard.rb'
+require './Solver.rb'
+require './Board.rb'
 
 MiniTest::Assertions.diff=nil
 

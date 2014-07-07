@@ -1,4 +1,4 @@
-require './SudoSquare.rb'
+require './Square.rb'
 
 module SudokuSolver
 
@@ -10,7 +10,7 @@ module SudokuSolver
       Math.sqrt(size).floor == Math.sqrt(size)
     end
 
-    def initialize(init_size = 9, initial_values = nil)
+    def initialize(init_size = 9, initial_values = nil, board_array = nil)
       CheckSize(init_size) or raise ArgumentError, "sudoku boards can only be certain sizes"
       @size = init_size
       @block_size = Math.sqrt(init_size).floor
@@ -23,6 +23,11 @@ module SudokuSolver
       end
     end
     
+    def replace_board(array)
+      @board = array
+      return self
+    end
+
     def row(row_number)
       row_number > 0 and row_number <= size or raise ArgumentError, "this board has only #{size} rows"
       @board[row_number - 1]
@@ -116,6 +121,14 @@ module SudokuSolver
       puts inspect
     end
     
+    def clone
+      new_board = Array.new(size) do |rowindex|
+        Array.new(size) do |columnindex|
+          @board[rowindex][columnindex].clone
+        end
+      end
+      return Board.new(size).replace_board(new_board)
+    end
   end
   
 end
