@@ -51,5 +51,19 @@ module SudokuSolver
       end
 
     end
+
+    def possibilities=(list)
+      #may replace this with an procedure that checks validity
+      @possibilities = list
+    end
+
+    def clone
+      new_square = Square.new(@size, @value)
+      if @value.nil?
+        new_square.possibilities = @possibilities.clone
+      end
+      return new_square
+    end
+
   end
 end

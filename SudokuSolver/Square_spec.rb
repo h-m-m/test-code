@@ -53,5 +53,11 @@ describe :Square do
     @bigsq.value = 13
     @bigsq.to_s.must_equal '13'
   end
-
+  it "clones its possibility list when cloned" do
+    @sq.delete_possibility(4)
+    @new_sq = @sq.clone
+    @new_sq.delete_possibility(2)
+    @new_sq.possibilities.index(4).must_be_nil
+    @sq.possibilities.index(2).wont_be_nil
+  end
 end

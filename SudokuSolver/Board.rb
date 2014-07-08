@@ -23,9 +23,9 @@ module SudokuSolver
       end
     end
     
-    def replace_board(array)
+    #may replace this with an procedure that checks validity
+    def board=(array)
       @board = array
-      return self
     end
 
     def row(row_number)
@@ -122,12 +122,14 @@ module SudokuSolver
     end
     
     def clone
-      new_board = Array.new(size) do |rowindex|
-        Array.new(size) do |columnindex|
+      new_board_array = Array.new(@size) do |rowindex|
+        Array.new(@size) do |columnindex|
           @board[rowindex][columnindex].clone
         end
       end
-      return Board.new(size).replace_board(new_board)
+      new_board = Board.new(@size)
+      new_board.board = new_board_array
+      return new_board
     end
   end
   

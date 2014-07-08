@@ -181,9 +181,13 @@ EOF
   it "clones its squares when it clones itself" do
     @board = SudokuSolver::Board.new
     @board.square(4,8).value = 4
+    @board.square(9,2).delete_possibility(5)
     @new_board = @board.clone
     @new_board.square(4,8).value.must_equal 4
+    @new_board.square(9,2).possibilities.index(5).must_be_nil
     @new_board.square(3,1).value = 1
+    @new_board.square(2,4).delete_possibility(2)
     @board.square(3,1).value.must_be_nil
+    @board.square(2,4).possibilities.index(2).wont_be_nil
   end
 end
