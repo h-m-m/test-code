@@ -19,6 +19,9 @@ module SudokuSolver
 
     def value=(new_value)
       valid_value?(new_value) or raise ArgumentError, "invalid value for sudoku square"
+      unless @possibilities.index(new_value) 
+        raise RuntimeError
+      end
       @possibilities = [new_value]
       @value = new_value
     end

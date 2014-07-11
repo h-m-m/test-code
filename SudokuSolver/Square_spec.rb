@@ -39,9 +39,9 @@ describe :Square do
     @sq.possibilities.length.must_equal 1
   end
 
-  it "has a method that won't let you set it to a value there's no possibility for" do
+  it "won't let you set it to a value there's no possibility for" do
     (1..3).each { |d| @sq.delete_possibility d }
-    @sq.update_value_if_valid(2).must_equal false
+    proc {@sq.value=2}.must_raise(RuntimeError)
   end
 
   it "can provide a string representation that is constant width regardless of value" do
@@ -50,8 +50,9 @@ describe :Square do
     @bigsq.to_s.must_equal '**'
     @bigsq.value = 9
     @bigsq.to_s.must_equal ' 9'
-    @bigsq.value = 13
-    @bigsq.to_s.must_equal '13'
+    @bigsq2 = SudokuSolver::Square.new(16)
+    @bigsq2.value = 13
+    @bigsq2.to_s.must_equal '13'
   end
   it "clones its possibility list when cloned" do
     @sq.delete_possibility(4)
