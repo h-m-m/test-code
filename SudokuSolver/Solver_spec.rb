@@ -45,7 +45,7 @@ EOF
       [9,2] => 2, [9,7] => 9, [9,8] => 3
     }
 
-    @hard_board = SudokuSolver::Board.new(9,@hard_board_hash)
+    @hard_board = SudokuSolver::Board.new(size: 9, values_hash: @hard_board_hash)
     @solver = SudokuSolver::Solver.new
   end
   
@@ -58,6 +58,9 @@ EOF
     @solver.solve!(@hard_board)
     puts @hard_board.inspect
     @hard_board.inspect.must_equal @hard_board_solution_str
+  end
+
+  it "can try and solve a board via reductio ad absurdum" do
   end
 end
 

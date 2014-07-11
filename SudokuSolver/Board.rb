@@ -10,24 +10,34 @@ module SudokuSolver
       Math.sqrt(size).floor == Math.sqrt(size)
     end
 
-    def initialize(init_size = 9, initial_values = nil, board_array = nil)
-      CheckSize(init_size) or raise ArgumentError, "sudoku boards can only be certain sizes"
-      @size = init_size
-      @block_size = Math.sqrt(init_size).floor
-      @board = Array.new(size) {Array.new(size) {Square.new(size)} }
-      if initial_values
-        initial_values.is_a?(Hash) or raise ArgumentError, "board object only accepts a hash of initial values"
-        initial_values.each do |location,value|
+    # defaults size: 9, values_hash: nil, squares_array: nil
+    # values must be a hash in the form of 
+    #  {[x1,y1]=>value1,[x2,y2]=>value2}
+    # initial_array must be a two-dimensional array of arrays of Square objects
+    #   all arrays must be have length == size
+    # specifying a hash and an array will overwrite data in the array using values specified in the hash
+    def initialize(args = {})
+      @size = 9
+      if args.has_key? :size
+        CheckSize(args[:size]) or raise ArgumentError, "sudoku boards can only be certain sizes"
+        @size = args[:size]
+      end
+
+      @block_size = Math.sqrt(@size).floor
+      if args.has_key? :squares_array
+        @board = args[:squares_array]
+      else
+        @board = Array.new(size) {Array.new(size) {Square.new(size)} }
+      end
+
+      if args.has_key? :values_hash
+        args[:values_hash].is_a?(Hash) or raise ArgumentError, "board object only accepts a hash of initial values"
+        args[:values_hash].each do |location,value|
           square(*location).value = value
         end
       end
     end
     
-    #may replace this with an procedure that checks validity
-    def board=(array)
-      @board = array
-    end
-
     def row(row_number)
       row_number > 0 and row_number <= size or raise ArgumentError, "this board has only #{size} rows"
       @board[row_number - 1]
@@ -127,8 +137,7 @@ module SudokuSolver
           @board[rowindex][columnindex].clone
         end
       end
-      new_board = Board.new(@size)
-      new_board.board = new_board_array
+      new_board = Board.new(size: size, squares_array: new_board_array)
       return new_board
     end
   end
