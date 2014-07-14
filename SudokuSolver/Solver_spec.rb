@@ -49,19 +49,26 @@ EOF
     @solver = SudokuSolver::Solver.new
   end
   
-  it "can accept a board and return a solved copy" do
-    @new_board = @solver.solve(@hard_board)
-    @new_board.inspect.must_equal @hard_board_solution_str
-  end
-  
-  it "can accept the board and solve it in place" do
-    @solver.solve!(@hard_board)
-    puts @hard_board.inspect
-    @hard_board.inspect.must_equal @hard_board_solution_str
+  it "can try and solve a board without guessing" do
+    @solver.solve(@hard_board)
+    @hard_board.inspect.must_equal <<EOF
+ 3 8 9 | * * 7 | * 6 1
+ 4 5 * | * 1 * | * 9 7
+ * 7 1 | 9 * * | * 5 3
+----------------------
+ * 4 3 | 7 * 1 | 6 2 5
+ 7 * * | * 3 * | 1 4 8
+ * 1 5 | * * 6 | 3 7 9
+----------------------
+ * 3 8 | * * 4 | 7 1 6
+ 1 * 4 | * 7 * | 5 8 2
+ * 2 7 | 1 * * | 9 3 4
+EOF
+
   end
 
   it "can try and solve a board via reductio ad absurdum" do
-    @solver.solve!(@hard_board)
+    @solver.solve(@hard_board)
     @solver.guess(@hard_board).inspect.must_equal @hard_board_solution_str
   end
 

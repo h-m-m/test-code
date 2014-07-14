@@ -7,10 +7,8 @@ module SudokuSolver
 
     def intialize
     end
-    def solve(board)
-    end
     
-    def solve!(board, last_solution_count = board.size * board.size)
+    def solve(board, last_solution_count = board.size * board.size)
       unsolved_count = board.size * board.size
       board.coordinate_list.each do |coordinate|
         value_at_position = board.square(*coordinate).value
@@ -33,7 +31,7 @@ module SudokuSolver
         board.columns.each {|column| reduce_single_possibilities_in(column,board.size,"column #{column}")}
         board.blocks.each {|block| reduce_single_possibilities_in(block,board.size,"block #{block}")}
         if unsolved_count < last_solution_count
-          solve!(board,unsolved_count)
+          solve(board,unsolved_count)
         else
           guess(board,unsolved_count)
         end
@@ -74,7 +72,7 @@ module SudokuSolver
         test_boards.push(board.clone)
         begin
           test_boards[-1].square(*position).value = guessing_value
-          solve!(test_boards[-1],unsolved_count - 1)
+          solve(test_boards[-1],unsolved_count - 1)
         rescue SolvingError => ex
           test_boards.pop
         end

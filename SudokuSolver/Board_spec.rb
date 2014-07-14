@@ -1,7 +1,6 @@
 require 'minitest/autorun'
 require './Board.rb'
 
-MiniTest::Assertions.diff =nil
 
 describe :Board do
   before do
@@ -171,7 +170,7 @@ EOF
         @board.square(*coord).value.must_equal 8
         @found_coordinate = true
       end
-      if coord = [9,9]
+      if coord == [9,9]
         @found_9x9 = true
       end
     end
