@@ -14,8 +14,8 @@ module SudokuSolver
     # values must be a hash in the form of 
     #  {[x1,y1]=>value1,[x2,y2]=>value2}
     # initial_array must be a two-dimensional array of arrays of Square objects
-    #   all arrays must be have length == size
-    # specifying a hash and an array will overwrite data in the array using values specified in the hash
+    #   all arrays must have length == size
+    # specifying both a hash and an array will overwrite data in the array using values specified in the hash
     def initialize(args = {})
       @size = 9
       if args.has_key? :size
@@ -56,6 +56,8 @@ module SudokuSolver
       (1..size).collect { |index| column(index) }
     end
 
+    # a flat list of every vaild coordinate pair
+    # would probably make more sense to do this by just iterating over size
     def coordinate_list
       @board.each_index.inject([]) do |result,row_index|
         result.concat( 
@@ -125,10 +127,6 @@ module SudokuSolver
         end
       end
       return result
-    end
-    
-    def pp
-      puts inspect
     end
     
     def clone

@@ -4,6 +4,33 @@ require './Board.rb'
 MiniTest::Assertions.diff =nil
 
 describe :Board do
+  before do
+    @hard_board_hash = {
+      [1,2] => 8, [1,3] => 9, [1,8] => 6, 
+      [2,1] => 4, [2,5] => 1, [2,9] => 7, 
+      [3,4] => 9, [3,8] => 5,
+      [4,2] => 4, [4,4] => 7, [4,7] => 6,
+      [5,1] => 7, [5,9] => 8,
+      [6,3] => 5, [6,6] => 6, [6,8] => 7,
+      [7,2] => 3, [7,6] => 4,
+      [8,1] => 1, [8,5] => 7, [8,9] => 2,
+      [9,2] => 2, [9,7] => 9, [9,8] => 3
+    }
+    @hard_board_str = <<EOF
+ * 8 9 | * * * | * 6 *
+ 4 * * | * 1 * | * * 7
+ * * * | 9 * * | * 5 *
+----------------------
+ * 4 * | 7 * * | 6 * *
+ 7 * * | * * * | * * 8
+ * * 5 | * * 6 | * 7 *
+----------------------
+ * 3 * | * * 4 | * * *
+ 1 * * | * 7 * | * * 2
+ * 2 * | * * * | 9 3 *
+EOF
+  end
+
   it "creates a 9x9 board of squares by default" do
     @board = SudokuSolver::Board.new
     @board.size.must_equal 9
@@ -129,31 +156,6 @@ EOF
   end
 
   it "can accept a hash of [coordinates]=>values and use it to populate a board" do
-    @hard_board_str = <<EOF
- * 8 9 | * * * | * 6 *
- 4 * * | * 1 * | * * 7
- * * * | 9 * * | * 5 *
-----------------------
- * 4 * | 7 * * | 6 * *
- 7 * * | * * * | * * 8
- * * 5 | * * 6 | * 7 *
-----------------------
- * 3 * | * * 4 | * * *
- 1 * * | * 7 * | * * 2
- * 2 * | * * * | 9 3 *
-EOF
-
-    @hard_board_hash = {
-      [1,2] => 8, [1,3] => 9, [1,8] => 6, 
-      [2,1] => 4, [2,5] => 1, [2,9] => 7, 
-      [3,4] => 9, [3,8] => 5,
-      [4,2] => 4, [4,4] => 7, [4,7] => 6,
-      [5,1] => 7, [5,9] => 8,
-      [6,3] => 5, [6,6] => 6, [6,8] => 7,
-      [7,2] => 3, [7,6] => 4,
-      [8,1] => 1, [8,5] => 7, [8,9] => 2,
-      [9,2] => 2, [9,7] => 9, [9,8] => 3
-    }
     @board = SudokuSolver::Board.new(size: 9,values_hash: @hard_board_hash)
     @board.inspect.must_equal @hard_board_str
   end
@@ -188,5 +190,30 @@ EOF
     @new_board.square(2,4).delete_possibility(2)
     @board.square(3,1).value.must_be_nil
     @board.square(2,4).possibilities.index(2).wont_be_nil
+    @board = SudokuSolver::Board.new(size: 9, values_hash: @hard_board_hash)
+    @new_board = @board.clone
+    @board.inspect.must_equal @hard_board_str
+    @new_board.inspect.must_equal @hard_board_str
+    @board.square(1,4).value = 4
+    @board.square(9,9).value = 4
+    @board.square(7,1).value = 9
+    @board.inspect.wont_equal @hard_board_str
+    @new_board.inspect.must_equal @hard_board_str
+    @new_board.square(1,4).value.must_be_nil
+    @new_board.square(9,9).value.must_be_nil
+    @new_board.square(7,1).value.must_be_nil
+    @board.inspect.must_equal <<EOF
+ * 8 9 | 4 * * | * 6 *
+ 4 * * | * 1 * | * * 7
+ * * * | 9 * * | * 5 *
+----------------------
+ * 4 * | 7 * * | 6 * *
+ 7 * * | * * * | * * 8
+ * * 5 | * * 6 | * 7 *
+----------------------
+ 9 3 * | * * 4 | * * *
+ 1 * * | * 7 * | * * 2
+ * 2 * | * * * | 9 3 4
+EOF
   end
 end

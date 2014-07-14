@@ -61,6 +61,18 @@ EOF
   end
 
   it "can try and solve a board via reductio ad absurdum" do
+    @solver.solve!(@hard_board)
+    @solver.guess(@hard_board).inspect.must_equal @hard_board_solution_str
+  end
+
+  it "will properly reduce lists of squares" do
+    def sof9 (value)
+      SudokuSolver::Square.new(9,value)
+    end
+    list = [sof9(1),sof9(2),sof9(3),sof9(nil),sof9(nil),sof9(nil),sof9(nil),sof9(nil),sof9(nil)]
+    (4..8).each { |i| list[i].delete_possibility(5)}
+    SudokuSolver::Solver.new.reduce_single_possibilities_in(list, 9)
+    list[3].value.must_equal 5
   end
 end
 

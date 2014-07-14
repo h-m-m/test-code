@@ -6,10 +6,16 @@ module SudokuSolver
     # this should probably be a class method that takes size as an argument
     attr_reader :maximum_width_of_to_s
     
-    def initialize(size, value = nil)
+    def initialize(size, init_value = nil)
       @size = size
-      @value = value
-      @possibilities = (1..size).to_a
+      if init_value.nil?
+        @value = nil
+        @possibilities = (1..size).to_a
+      else
+        (init_value > 0 and init_value <= size) or raise ArgumentError
+        @value = init_value
+        @possibilities = [init_value]
+      end
       @maximum_width_of_to_s = size / 10 + 1
     end
     
@@ -20,7 +26,7 @@ module SudokuSolver
     def value=(new_value)
       valid_value?(new_value) or raise ArgumentError, "invalid value for sudoku square"
       unless @possibilities.index(new_value) 
-        raise RuntimeError
+        raise RuntimeError, "value #{new_value} not in the list #{@possibilities}"
       end
       @possibilities = [new_value]
       @value = new_value
@@ -44,7 +50,7 @@ module SudokuSolver
 
     def delete_possibility(value)
       valid_value?(value) or raise ArgumentError, "possibility outside of valid range for this square"
-      if @possibilities.length == 1 and @possibilities[0] == value
+      if @value
         return false
       end
       

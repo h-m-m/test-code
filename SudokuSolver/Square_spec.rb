@@ -6,6 +6,8 @@ describe :Square do
   before do
     @sq = SudokuSolver::Square.new(9)
     @bigsq = SudokuSolver::Square.new(16)
+    @sq4 = SudokuSolver::Square.new(9,4)
+    @bigsq11 = SudokuSolver::Square.new(16,11)
   end
 
   it "has a size that determines max value" do
@@ -54,11 +56,14 @@ describe :Square do
     @bigsq2.value = 13
     @bigsq2.to_s.must_equal '13'
   end
-  it "clones its possibility list when cloned" do
+  it "clones its value and possibility list when cloned" do
     @sq.delete_possibility(4)
     @new_sq = @sq.clone
     @new_sq.delete_possibility(2)
     @new_sq.possibilities.index(4).must_be_nil
     @sq.possibilities.index(2).wont_be_nil
+    @new_sq4 = @sq4.clone
+    @new_sq4.value.must_equal 4
+    @new_sq4.possibilities.must_equal [4]
   end
 end
